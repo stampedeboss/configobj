@@ -453,7 +453,7 @@ class Section(dict):
         self._initialise()
         # we do this explicitly so that __setitem__ is used properly
         # (rather than just passing to ``dict.__init__``)
-        for entry, value in indict.items():
+        for entry, value in list(indict.items()):
             self[entry] = value
 
 

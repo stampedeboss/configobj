@@ -171,14 +171,14 @@ __all__ = (
 # this could be replaced if six is used for compatibility, or there are no
 # more assertions about items being a string
 if sys.version_info < (3,):
-    string_type = basestring
+    string_type = str
 else:
     string_type = str
     # so tests that care about unicode on 2.x can specify unicode, and the same
     # tests when run on 3.x won't complain about a undefined name "unicode"
     # since all strings are unicode on 3.x we just want to pass it through
     # unchanged
-    unicode = lambda x: x
+    str = lambda x: x
     # in python 3, all ints are equivalent to python 2 longs, and they'll
     # never show "L" in the repr
     long = int
@@ -336,11 +336,11 @@ def numToDottedQuad(num):
     import socket, struct
 
     # no need to intercept here, 4294967295L is fine
-    if num > long(4294967295) or num < 0:
+    if num > int(4294967295) or num < 0:
         raise ValueError('Not a good numeric IP: %s' % num)
     try:
         return socket.inet_ntoa(
-            struct.pack('!L', long(num)))
+            struct.pack('!L', int(num)))
     except (socket.error, struct.error, OverflowError):
         raise ValueError('Not a good numeric IP: %s' % num)
 
@@ -765,7 +765,7 @@ def _is_num_param(names, values, to_float=False):
     for (name, val) in zip(names, values):
         if val is None:
             out_params.append(val)
-        elif isinstance(val, (int, long, float, string_type)):
+        elif isinstance(val, (int, float, string_type)):
             try:
                 out_params.append(fun(val))
             except ValueError:
@@ -823,7 +823,7 @@ def is_integer(value, min=None, max=None):
     """
     (min_val, max_val) = _is_num_param(  # pylint: disable=unbalanced-tuple-unpacking
         ('min', 'max'), (min, max))
-    if not isinstance(value, (int, long, string_type)):
+    if not isinstance(value, (int, string_type)):
         raise VdtTypeError(value)
     if isinstance(value, string_type):
         # if it's a string - does it represent an integer ?
@@ -875,7 +875,7 @@ def is_float(value, min=None, max=None):
     """
     (min_val, max_val) = _is_num_param(  # pylint: disable=unbalanced-tuple-unpacking
         ('min', 'max'), (min, max), to_float=True)
-    if not isinstance(value, (int, long, float, string_type)):
+    if not isinstance(value, (int, float, string_type)):
         raise VdtTypeError(value)
     if not isinstance(value, float):
         # if it's a string - does it represent a float ?
@@ -1480,6 +1480,6 @@ if __name__ == '__main__':
     failures, tests = doctest.testmod(
         m, globs=globs,
         optionflags=doctest.IGNORE_EXCEPTION_DETAIL | doctest.ELLIPSIS)
-    print('{0} {1} failures out of {2} tests'
-          .format("FAIL" if failures else "*OK*", failures, tests))
+    print(('{0} {1} failures out of {2} tests'
+          .format("FAIL" if failures else "*OK*", failures, tests)))
     sys.exit(bool(failures))
